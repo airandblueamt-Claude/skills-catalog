@@ -101,17 +101,14 @@ main, .masthead, .amt-footer { position: relative; z-index: 1; }
   padding-bottom: 22px;
   border-bottom: 1px solid var(--line);
 }
-.masthead__logo { height: 58px; width: auto; transition: background .3s ease, padding .3s ease; }
-/* keep the (dark-text) logo legible on a dark page */
-:root[data-theme="dark"] .masthead__logo,
-:root:not([data-theme="light"]) .masthead__logo { }
+.masthead__logo { height: 58px; width: auto; }
+/* theme-specific logo: red mark kept, text recolored for the surface */
+.masthead__logo.logo-dark { display: none; }
+:root[data-theme="dark"] .masthead__logo.logo-light { display: none; }
+:root[data-theme="dark"] .masthead__logo.logo-dark { display: block; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .masthead__logo {
-    background: #fff; padding: 7px 12px; border-radius: 7px;
-  }
-}
-:root[data-theme="dark"] .masthead__logo {
-  background: #fff; padding: 7px 12px; border-radius: 7px;
+  :root:not([data-theme="light"]) .masthead__logo.logo-light { display: none; }
+  :root:not([data-theme="light"]) .masthead__logo.logo-dark { display: block; }
 }
 .masthead__bar-right { display: flex; align-items: center; gap: 18px; }
 .masthead__sys {
