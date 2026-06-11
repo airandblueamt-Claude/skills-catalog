@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AMT — Claude Skills Catalog</title>
+  <meta name="description" content="A catalog of Claude Code skills by AMT — technical submittals, document control & AV systems engineering." />
+  <link rel="icon" href="public/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,900;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="grid-overlay" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="masthead">
+    <div class="masthead__rule">
+      <span class="tick">CLAUDE CODE</span>
+      <span class="tick tick--right">SKILLS CATALOG</span>
+    </div>
+    <h1 class="masthead__title">
+      <span class="masthead__title-line">Skills,</span>
+      <span class="masthead__title-line masthead__title-line--em">drafted &amp; shipped.</span>
+    </h1>
+    <p class="masthead__tagline" id="tagline"></p>
+    <a class="masthead__gh" id="ghLink" href="#" target="_blank" rel="noopener">
+      <span class="dot"></span><span id="ghHandle">github</span>
+    </a>
+  </header>
+
+  <main>
+    <section class="section" id="mineSection">
+      <div class="section__head">
+        <h2 class="section__title">My Skills</h2>
+        <p class="section__note">Authored &amp; maintained by AMT</p>
+        <span class="section__count" id="mineCount"></span>
+      </div>
+      <div class="cards" id="mineCards"></div>
+    </section>
+
+    <section class="section section--uses" id="usesSection">
+      <div class="section__head">
+        <h2 class="section__title">Skills I Use</h2>
+        <p class="section__note">Tools I build on — credit to their authors</p>
+        <span class="section__count" id="usesCount"></span>
+      </div>
+      <div class="uses-list" id="usesList"></div>
+    </section>
+  </main>
+
+  <footer class="titleblock">
+    <div class="titleblock__cell titleblock__cell--wide">
+      <span class="titleblock__label">Catalog</span>
+      <span class="titleblock__value">AMT — Advanced Micro Technologies</span>
+    </div>
+    <div class="titleblock__cell">
+      <span class="titleblock__label">Drawn by</span>
+      <span class="titleblock__value">airandblueamt-Claude</span>
+    </div>
+    <div class="titleblock__cell">
+      <span class="titleblock__label">Sheet</span>
+      <span class="titleblock__value">01 / 01</span>
+    </div>
+    <div class="titleblock__cell">
+      <span class="titleblock__label">Rev</span>
+      <span class="titleblock__value">00</span>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

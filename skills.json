@@ -1,0 +1,47 @@
+{
+  "owner": {
+    "name": "AMT — Advanced Micro Technologies",
+    "handle": "airandblueamt-Claude",
+    "tagline": "Claude Code skills for technical submittals, document control & AV systems engineering.",
+    "github": "https://github.com/airandblueamt-Claude"
+  },
+  "mine": [
+    {
+      "slug": "amt-pas-compiler",
+      "ref": "AMT-SKL-001",
+      "name": "AMT PAS Compiler",
+      "summary": "Compile an AMT Product/Material Approval Submittal into one branded PDF — cover, bilingual table of contents, section dividers, rendered BOQ tables, appended datasheets, partnership/warranty letters and single-line diagrams — from a standard numbered input folder.",
+      "use_when": "Building, assembling or generating a technical submittal, PAS, material submittal or tender compliance package.",
+      "tags": ["PDF", "Submittals", "Bilingual EN/AR", "Python", "Document Control"],
+      "repo": "https://github.com/airandblueamt-Claude/amt-pas-compiler",
+      "install": "git clone https://github.com/airandblueamt-Claude/amt-pas-compiler.git ~/.claude/skills/amt-pas-compiler && cd ~/.claude/skills/amt-pas-compiler && bash install.sh",
+      "status": "public"
+    }
+  ],
+  "uses": [
+    {
+      "name": "frontend-design",
+      "summary": "Create distinctive, production-grade frontend interfaces with high design quality.",
+      "author": "Anthropic — Superpowers",
+      "link": "https://github.com/anthropics/claude-code"
+    },
+    {
+      "name": "agentdb-vector-search",
+      "summary": "Semantic vector search for intelligent document retrieval and RAG.",
+      "author": "claude-flow / ruflo",
+      "link": "https://github.com/ruvnet/claude-flow"
+    },
+    {
+      "name": "sparc-methodology",
+      "summary": "SPARC (Specification, Pseudocode, Architecture, Refinement, Completion) development workflow with multi-agent orchestration.",
+      "author": "claude-flow / ruflo",
+      "link": "https://github.com/ruvnet/claude-flow"
+    },
+    {
+      "name": "swarm-orchestration",
+      "summary": "Orchestrate multi-agent swarms for parallel task execution and dynamic coordination.",
+      "author": "claude-flow / ruflo",
+      "link": "https://github.com/ruvnet/claude-flow"
+    }
+  ]
+}

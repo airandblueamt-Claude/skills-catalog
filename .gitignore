@@ -1,0 +1,10 @@
+# Dependencies / build (none today, but keep clean)
+node_modules/
+.vercel/
+dist/
+.DS_Store
+Thumbs.db
+*.log
+
+# local preview render
+preview.png
