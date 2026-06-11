@@ -49,13 +49,18 @@ helper, and pushes.
 - Or at vercel.com: New Project → import `skills-catalog` → Deploy (no build settings needed).
 - After linking, every push to `main` auto-deploys.
 
-**B. Enable the `@claude` assistant (for Option 1)**
+**B. (Optional) Enable the `@claude` assistant — no API key, uses your Claude plan**
+You do **not** need a paid API key. The `@claude` bot runs on your **Claude Pro/Max
+subscription** via an OAuth token. Skip this entirely if you don't want the bot —
+Options 2 and 3 above need nothing.
 1. Install the Claude GitHub App: https://github.com/apps/claude → Install → select this repo.
-2. Add the API key secret: repo **Settings → Secrets and variables → Actions → New repository secret**
-   - Name: `ANTHROPIC_API_KEY`
-   - Value: a key from https://console.anthropic.com/account/keys
-   - *(Pro/Max users can use `CLAUDE_CODE_OAUTH_TOKEN` instead — see `.github/workflows/claude.yml`.)*
-3. That's it. Without this secret, the `@claude` workflow simply does nothing (Options 2 & 3 still work).
+2. Generate a subscription token: in Claude Code run **`claude setup-token`** (requires a
+   Claude Pro or Max plan) and copy the token it prints.
+3. Add it as a secret: repo **Settings → Secrets and variables → Actions → New repository secret**
+   - Name: `CLAUDE_CODE_OAUTH_TOKEN`
+   - Value: the token from step 2
+4. Done. Without this secret the `@claude` workflow simply does nothing; the keyless
+   paths keep working.
 
 **C. Add teammates** — repo **Settings → Collaborators** → add them. Only collaborators
 (OWNER / MEMBER / COLLABORATOR) can trigger `@claude`, which keeps API cost under control

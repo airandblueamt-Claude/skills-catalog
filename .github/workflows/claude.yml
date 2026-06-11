@@ -1,10 +1,14 @@
 name: Claude Assistant
 
-# Lets teammates request changes in plain English: open an issue (or comment)
+# OPTIONAL convenience. The primary, keyless way to add skills is editing
+# catalog.config.json on github.com (build-catalog.yml rebuilds the site for free).
+#
+# This lets teammates request changes in plain English: open an issue (or comment)
 # and mention @claude — Claude makes the edit and opens a pull request for review.
-# One-time setup required (see docs/TEAM-GUIDE.md): install the Claude GitHub App
-# and add the ANTHROPIC_API_KEY repository secret. Without the secret this workflow
-# simply no-ops.
+# It runs on a Claude PRO/MAX SUBSCRIPTION token (no pay-per-use API key needed).
+# One-time setup (see docs/TEAM-GUIDE.md): install the Claude GitHub App and add the
+# CLAUDE_CODE_OAUTH_TOKEN repository secret (from `claude setup-token`). Without the
+# secret this workflow simply no-ops — the keyless paths keep working.
 
 on:
   issue_comment:
@@ -36,6 +40,7 @@ jobs:
 
       - uses: anthropics/claude-code-action@v1
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          # cap the work per request to keep cost predictable
+          # Uses your Claude Pro/Max subscription — NOT a metered API key.
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          # cap the work per request
           claude_args: "--max-turns 6"
