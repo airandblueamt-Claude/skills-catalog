@@ -8,3 +8,8 @@ Thumbs.db
 
 # local preview render
 preview*.png
+
+# ruflo / claude-flow local telemetry — never publish
+.claude-flow/
+.ruflo/
+.swarm/
