@@ -20,7 +20,13 @@ python3 -m http.server 8000
 # then open http://localhost:8000
 ```
 
-## Add or update a skill (the whole workflow)
+## Add or update a skill
+
+> **Not a coder?** See **[docs/TEAM-GUIDE.md](docs/TEAM-GUIDE.md)** — add a skill by
+> editing one file on GitHub.com, or by opening an issue and mentioning `@claude`. No
+> terminal required; a GitHub Action regenerates `skills.json` and the site redeploys.
+
+The full local workflow:
 
 1. Open [`catalog.config.json`](catalog.config.json).
 2. **A skill you authored** → add an object to the `"mine"` array. Only the curated
@@ -65,6 +71,11 @@ python3 -m http.server 8000
 | `styles.css` | AMT brand theme (light + dark) |
 | `app.js` | Renders cards + rows from `skills.json`; theme toggle; copy-install |
 | `public/` | AMT logo (light + dark), favicon |
+| `CLAUDE.md` | Repo rules for Claude Code / the `@claude` bot |
+| `.github/workflows/build-catalog.yml` | Auto-regenerates `skills.json` on config change |
+| `.github/workflows/claude.yml` | `@claude` assistant — teammates request changes by mention |
+| `.github/ISSUE_TEMPLATE/add-skill.yml` | Guided "add a skill" issue form |
+| `docs/TEAM-GUIDE.md` | No-terminal workflow + one-time setup |
 
 ## Deploy (Vercel)
 

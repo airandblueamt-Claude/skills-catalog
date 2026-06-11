@@ -3,15 +3,20 @@
 sync-skills.py — generate skills.json from catalog.config.json.
 
 For each skill listed under "mine", reads its SKILL.md frontmatter and fills in
-`name`, `summary` and `use_when` automatically (so you never retype a description).
-The curated fields — ref / tags / repo / install / status — come from the config.
-Anything you set explicitly in the config wins over the auto-pulled value.
+`name`, `summary` and `use_when` automatically — so nobody has to retype a
+description. The SKILL.md is read from, in order:
+  1. a local checkout  (~/.claude/skills/<slug>/SKILL.md, or "skill_dir"), then
+  2. the skill's GitHub repo  (raw.githubusercontent.com, from "repo").
+So it works on an author's machine AND in CI / on a teammate's machine where the
+skill isn't installed locally.
+
+Curated fields — ref / tags / repo / install / status — always come from the
+config. Anything you set explicitly in the config wins over the auto-pulled value.
 
 Usage:
     python3 scripts/sync-skills.py            # regenerate skills.json
-    python3 scripts/sync-skills.py --check    # fail if skills.json is out of date
-
-The skill folder defaults to ~/.claude/skills/<slug>; override with "skill_dir".
+    python3 scripts/sync-skills.py --check    # exit 1 if skills.json is out of date
+    python3 scripts/sync-skills.py --offline  # never hit the network (local only)
 """
 from __future__ import annotations
 
@@ -19,11 +24,16 @@ import json
 import os
 import re
 import sys
+import urllib.request
+import urllib.error
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 CONFIG = os.path.join(ROOT, "catalog.config.json")
 OUTPUT = os.path.join(ROOT, "skills.json")
+
+DEFAULT_BRANCHES = ("main", "master")
+OFFLINE = "--offline" in sys.argv
 
 # tokens to uppercase when prettifying a slug into a display name
 ACRONYMS = {
@@ -32,18 +42,14 @@ ACRONYMS = {
 }
 
 
-def parse_frontmatter(path: str) -> dict:
-    """Read YAML-ish frontmatter (--- ... ---). Tolerates quoted/unquoted values."""
-    with open(path, encoding="utf-8") as fh:
-        text = fh.read()
+def parse_frontmatter(text: str) -> dict:
+    """Parse YAML-ish frontmatter (--- ... ---). Tolerates quoted/unquoted values."""
     m = re.match(r"^---\s*\n(.*?)\n---\s*\n", text, re.DOTALL)
     if not m:
         return {}
     fields = {}
     for line in m.group(1).splitlines():
-        if not line.strip() or line.lstrip().startswith("#"):
-            continue
-        if ":" not in line:
+        if not line.strip() or line.lstrip().startswith("#") or ":" not in line:
             continue
         key, _, val = line.partition(":")
         val = val.strip()
@@ -55,12 +61,49 @@ def parse_frontmatter(path: str) -> dict:
     return fields
 
 
+def raw_url(repo: str, branch: str) -> str:
+    """github.com/<owner>/<name>(.git) -> raw SKILL.md URL for a branch."""
+    m = re.match(r"https?://github\.com/([^/]+)/([^/]+?)(?:\.git)?/?$", repo or "")
+    if not m:
+        return ""
+    return f"https://raw.githubusercontent.com/{m.group(1)}/{m.group(2)}/{branch}/SKILL.md"
+
+
+def fetch_text(url: str, timeout: int = 12) -> str | None:
+    try:
+        req = urllib.request.Request(url, headers={"User-Agent": "amt-catalog-sync"})
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            return resp.read().decode("utf-8")
+    except (urllib.error.URLError, urllib.error.HTTPError, TimeoutError, OSError):
+        return None
+
+
+def load_skill_md(entry: dict) -> tuple[str, str]:
+    """Return (text, source). Try a local checkout first, then the GitHub repo."""
+    slug = entry["slug"]
+    local = os.path.join(
+        os.path.expanduser(entry.get("skill_dir", f"~/.claude/skills/{slug}")),
+        "SKILL.md",
+    )
+    if os.path.isfile(local):
+        with open(local, encoding="utf-8") as fh:
+            return fh.read(), "local"
+    if OFFLINE:
+        return "", "offline (no local copy)"
+    branches = [entry["branch"]] if entry.get("branch") else list(DEFAULT_BRANCHES)
+    for b in branches:
+        url = raw_url(entry.get("repo", ""), b)
+        if not url:
+            break
+        txt = fetch_text(url)
+        if txt:
+            return txt, f"repo@{b}"
+    return "", "not found"
+
+
 def prettify(slug: str) -> str:
     words = re.split(r"[-_\s]+", slug)
-    out = []
-    for w in words:
-        out.append(w.upper() if w.lower() in ACRONYMS else w.capitalize())
-    return " ".join(out)
+    return " ".join(w.upper() if w.lower() in ACRONYMS else w.capitalize() for w in words)
 
 
 def split_summary(description: str) -> tuple[str, str | None]:
@@ -75,32 +118,22 @@ def split_summary(description: str) -> tuple[str, str | None]:
     return summary, (use_when or None)
 
 
-def build_mine(entry: dict) -> dict | None:
+def build_mine(entry: dict) -> dict:
     slug = entry["slug"]
-    skill_dir = os.path.expanduser(
-        entry.get("skill_dir", f"~/.claude/skills/{slug}")
-    )
-    skill_md = os.path.join(skill_dir, "SKILL.md")
-
-    fm = parse_frontmatter(skill_md) if os.path.isfile(skill_md) else {}
-    if not fm:
-        print(f"  ! {slug}: SKILL.md frontmatter not found at {skill_md} "
-              f"— using config values only.")
+    text, source = load_skill_md(entry)
+    fm = parse_frontmatter(text) if text else {}
+    if not fm and not entry.get("summary"):
+        print(f"  ! {slug}: no SKILL.md found ({source}) and no summary in config.")
     desc = fm.get("description", "")
     auto_summary, auto_use_when = split_summary(desc) if desc else ("", None)
 
-    name = entry.get("name") or (
-        prettify(fm["name"]) if fm.get("name") else prettify(slug)
-    )
-    summary = entry.get("summary") or auto_summary
-    use_when = entry.get("use_when", auto_use_when)
-
+    name = entry.get("name") or (prettify(fm["name"]) if fm.get("name") else prettify(slug))
     card = {
         "slug": slug,
         "ref": entry.get("ref", ""),
         "name": name,
-        "summary": summary,
-        "use_when": use_when,
+        "summary": entry.get("summary") or auto_summary,
+        "use_when": entry.get("use_when", auto_use_when),
         "tags": entry.get("tags", []),
         "repo": entry.get("repo", ""),
         "install": entry.get("install", ""),
@@ -108,30 +141,26 @@ def build_mine(entry: dict) -> dict | None:
     }
     if card["use_when"] is None:
         del card["use_when"]
-    src = "SKILL.md" if desc else "config"
-    print(f"  ✓ {slug}: '{name}' (summary from {src})")
+    print(f"  ✓ {slug}: '{name}' (from {source})")
     return card
 
 
 def generate(config: dict) -> dict:
     print("Syncing skills from SKILL.md frontmatter …")
-    mine = [c for c in (build_mine(e) for e in config.get("mine", [])) if c]
     return {
         "_note": "GENERATED by scripts/sync-skills.py from catalog.config.json — edit the config, not this file.",
         "owner": config.get("owner", {}),
-        "mine": mine,
+        "mine": [build_mine(e) for e in config.get("mine", [])],
         "uses": config.get("uses", []),
     }
 
 
 def main() -> int:
-    check = "--check" in sys.argv
     with open(CONFIG, encoding="utf-8") as fh:
         config = json.load(fh)
-    result = generate(config)
-    rendered = json.dumps(result, ensure_ascii=False, indent=2) + "\n"
+    rendered = json.dumps(generate(config), ensure_ascii=False, indent=2) + "\n"
 
-    if check:
+    if "--check" in sys.argv:
         current = open(OUTPUT, encoding="utf-8").read() if os.path.isfile(OUTPUT) else ""
         if current != rendered:
             print("✗ skills.json is OUT OF DATE — run: python3 scripts/sync-skills.py")
@@ -141,7 +170,8 @@ def main() -> int:
 
     with open(OUTPUT, "w", encoding="utf-8") as fh:
         fh.write(rendered)
-    print(f"Wrote {OUTPUT} — {len(result['mine'])} mine, {len(result['uses'])} uses.")
+    data = json.loads(rendered)
+    print(f"Wrote {OUTPUT} — {len(data['mine'])} mine, {len(data['uses'])} uses.")
     return 0
 
 

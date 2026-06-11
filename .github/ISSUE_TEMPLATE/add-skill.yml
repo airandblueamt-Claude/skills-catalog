@@ -1,0 +1,56 @@
+name: "➕ Add a skill to the catalog"
+description: "Request a skill be added to the AMT skills catalog. Fill the fields — no coding needed."
+title: "Add skill: <skill name>"
+labels: ["catalog"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Fill this in and submit. To have it added **automatically**, post a comment
+        on the new issue that says `@claude please add this skill to the catalog`
+        (a maintainer can also do it by hand). The name and description are pulled
+        from the skill's own `SKILL.md` — you don't need to write them here.
+  - type: input
+    id: slug
+    attributes:
+      label: Skill slug (folder / repo name)
+      placeholder: my-new-skill
+    validations:
+      required: true
+  - type: input
+    id: repo
+    attributes:
+      label: GitHub repo URL
+      placeholder: https://github.com/airandblueamt-Claude/my-new-skill
+    validations:
+      required: true
+  - type: dropdown
+    id: section
+    attributes:
+      label: Which section?
+      options:
+        - "My Skills (we authored it)"
+        - "Skills I Use (third-party — credit the author)"
+    validations:
+      required: true
+  - type: input
+    id: install
+    attributes:
+      label: Install command (for "My Skills")
+      placeholder: git clone https://github.com/airandblueamt-Claude/my-new-skill.git ~/.claude/skills/my-new-skill
+    validations:
+      required: false
+  - type: input
+    id: tags
+    attributes:
+      label: Tags (comma-separated)
+      placeholder: PDF, Submittals, Bilingual EN/AR
+    validations:
+      required: false
+  - type: input
+    id: author
+    attributes:
+      label: Author (only for "Skills I Use")
+      placeholder: claude-flow / ruflo
+    validations:
+      required: false
