@@ -13,3 +13,7 @@ preview*.png
 .claude-flow/
 .ruflo/
 .swarm/
+
+# python bytecode
+__pycache__/
+*.pyc
