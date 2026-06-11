@@ -10,6 +10,13 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Saira:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
+  <script>
+    /* apply saved theme before paint to avoid a flash */
+    try {
+      var t = localStorage.getItem("amt-theme");
+      if (t) document.documentElement.setAttribute("data-theme", t);
+    } catch (e) {}
+  </script>
 </head>
 <body>
   <div class="diamond-watermark" aria-hidden="true"></div>
@@ -17,7 +24,10 @@
   <header class="masthead">
     <div class="masthead__bar">
       <img class="masthead__logo" src="public/amt-logo.png" alt="AMT — Advanced Micro Technologies Co." />
-      <span class="masthead__sys">Networking · Low Current Systems</span>
+      <div class="masthead__bar-right">
+        <span class="masthead__sys">Networking · Low Current Systems</span>
+        <button class="theme-toggle" id="themeToggle" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">🌙</button>
+      </div>
     </div>
 
     <div class="masthead__label">

@@ -51,7 +51,35 @@ function pad(n) {
   return String(n).padStart(2, "0");
 }
 
+function setupThemeToggle() {
+  const btn = document.getElementById("themeToggle");
+  if (!btn) return;
+  const prefersDark =
+    window.matchMedia &&
+    window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  const effective = () => {
+    const attr = document.documentElement.getAttribute("data-theme");
+    return attr || (prefersDark ? "dark" : "light");
+  };
+  const sync = () => {
+    btn.textContent = effective() === "dark" ? "☀️" : "🌙";
+  };
+  sync();
+
+  btn.addEventListener("click", () => {
+    const next = effective() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try {
+      localStorage.setItem("amt-theme", next);
+    } catch (e) {}
+    sync();
+  });
+}
+
 async function main() {
+  setupThemeToggle();
+
   let data;
   try {
     const res = await fetch("skills.json", { cache: "no-cache" });

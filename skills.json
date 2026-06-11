@@ -16,6 +16,17 @@
       "repo": "https://github.com/airandblueamt-Claude/amt-pas-compiler",
       "install": "git clone https://github.com/airandblueamt-Claude/amt-pas-compiler.git ~/.claude/skills/amt-pas-compiler && cd ~/.claude/skills/amt-pas-compiler && bash install.sh",
       "status": "public"
+    },
+    {
+      "slug": "amt-brand-kit",
+      "ref": "AMT-SKL-002",
+      "name": "AMT Brand Kit",
+      "summary": "AMT's brand identity as a reusable skill — colors, the glossy red gradient, the diamond/chevron motif, typography, logo assets and the contact block, plus ready-to-use design tokens (CSS + JSON). Apply it consistently across any medium.",
+      "use_when": "Designing or styling anything for AMT — web pages, PowerPoint decks, posters, flyers, social graphics, documents or email signatures.",
+      "tags": ["Branding", "Design Tokens", "CSS", "Bilingual EN/AR", "Templates"],
+      "repo": "https://github.com/airandblueamt-Claude/amt-brand-kit",
+      "install": "git clone https://github.com/airandblueamt-Claude/amt-brand-kit.git ~/.claude/skills/amt-brand-kit",
+      "status": "public"
     }
   ],
   "uses": [

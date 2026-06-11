@@ -7,4 +7,4 @@ Thumbs.db
 *.log
 
 # local preview render
-preview.png
+preview*.png
